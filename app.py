@@ -12,6 +12,7 @@ df = pd.read_csv("normalized_data_with_ABC_classification.csv", delimiter=',')
 # UI: Date input with default to today
 selected_date = st.date_input("Select today's date", value=datetime.today())
 today = datetime.combine(selected_date, datetime.min.time())
+st.write("Chosen date:", today)
 
 # UI: Site/SubSite filter
 df['Site_SubSite'] = df['Sitio'].astype(str) + " / " + df['SubSite'].astype(str)
@@ -49,11 +50,15 @@ if st.button("Run"):
 
         selected = []
         for cls in ['A', 'B', 'C']:
-            class_df = site_df[site_df['Classification'] == cls].sort_values(by='Times_Counted_CurrentQtr')
+            ####class_df = site_df[site_df['Classification'] == cls].sort_values(by='Times_Counted_CurrentQtr')
+            class_df = site_df[site_df['Classification'] == cls].sort_values(by=['Times_Counted_CurrentQtr', 'Z', 'X', 'Y'])
             selected.append(class_df.head(quota[cls]))
         selected_df = pd.concat(selected)
 
         seed_coords = full_group_df.sort_values(by='LastCount_Date', ascending=False)[['X', 'Y', 'Z']].head(1).values
+        #print('Chosen seed: ', seed_coords)
+        st.write("Chosen seed:", seed_coords)
+
         coords = selected_df[['X', 'Y', 'Z']]
         n_clusters = max(1, len(coords) // max_locations)
         kmeans = KMeans(n_clusters=n_clusters, init=seed_coords, n_init=1, random_state=42)
