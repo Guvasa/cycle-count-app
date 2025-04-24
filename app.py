@@ -86,9 +86,9 @@ if st.button("Run"):
             final_selection['X'], final_selection['Y'], final_selection['Z'],
             c=final_selection['Cluster'], cmap='tab10')
         ax.set_title("3D Clustered Daily Workload")
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.set_zlabel("Z")
+        ax.set_xlabel("Z")
+        ax.set_ylabel("X")
+        ax.set_zlabel("Y")
         st.pyplot(fig)
     else:
         st.warning("No eligible locations for selected Site/SubSite on this date.")
