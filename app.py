@@ -74,7 +74,8 @@ if st.button("Run"):
             seed_row = full_group_df.sort_values(by='LastCount_Date', ascending=False).iloc[0]
 
         seed_coords = [[seed_row['X'], seed_row['Y'], seed_row['Z']]]
-        st.write(f"📍 Chosen seed for {seed_row['Location']}: {seed_coords}")
+        #st.write(f"📍 Chosen seed for {seed_row['Location']}: {seed_coords}")
+        st.write(f\"📍 Chosen seed for {seed_row['Location']}: {[int(seed_row['X']), int(seed_row['Y']), int(seed_row['Z'])]}\")
 
         coords = selected_df[['X', 'Y', 'Z']]
         n_clusters = max(1, len(coords) // max_locations)
