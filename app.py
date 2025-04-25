@@ -63,7 +63,7 @@ if st.button("Run"):
 
         selected = []
         for cls in ['A', 'B', 'C']:
-            class_df = site_df[site_df['Classification'] == cls].sort_values(by=['Times_Counted_CurrentQtr', 'Z'])
+            class_df = site_df[site_df['Classification'] == cls].sort_values(by=['Times_Counted_CurrentQtr', 'Z', 'X', 'Y'])
             selected.append(class_df.head(quota[cls]))
         selected_df = pd.concat(selected)
 
