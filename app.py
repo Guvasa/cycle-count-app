@@ -10,7 +10,8 @@ from datetime import datetime
 from mpl_toolkits.mplot3d import Axes3D
 
 # Load dataset
-df = pd.read_csv("normalized_data_with_ABC_classification.csv", delimiter=',')
+#df = pd.read_csv("normalized_data_with_ABC_classification.csv", delimiter=',')
+df = pd.read_csv("normalized_data_with_ABC_classification.csv", delimiter=',', encoding='latin1')
 
 # UI: Date input with default to today
 selected_date = st.date_input("Select today's date", value=datetime.today())
