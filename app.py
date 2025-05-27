@@ -64,6 +64,9 @@ a_pct = st.sidebar.slider("% A", 0, 100, 10)
 b_pct = st.sidebar.slider("% B", 0, 100 - a_pct, 15)
 c_pct = 100 - a_pct - b_pct
 st.sidebar.markdown(f"**% C:** {c_pct}%")
+st.write(a_pct)
+st.write(b_pct)
+st.write(c_pct)
 
 # Convert date and calculate days since last count
 df['LastCount_Date'] = pd.to_datetime(df['LastCount_Date'], dayfirst=True, errors='coerce')
