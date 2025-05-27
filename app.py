@@ -12,6 +12,24 @@ from mpl_toolkits.mplot3d import Axes3D
 # Load dataset
 df = pd.read_csv("normalized_data_with_ABC_classification.csv", delimiter=',', encoding='latin1')
 
+# Static dictionary of MaxLocations per SubSite
+default_max_locations = {
+    "CALIDAD Location": 1,
+    "CHIHUAHUA": 1,
+    "Distribution Center (DC)": 33,
+    "Ingeniería de Servicio MTY": 1,
+    "Integración 2.0": 1,
+    "MTY Qality Assurance": 1,
+    "MTY. BRANCH": 13,
+    "MTY. BRANCH - RM": 3,
+    "Qro. branch": 3,
+    "Raw Material": 30,
+    "Ticket Express": 4,
+    "TIJ Quality Assurance": 1,
+    "Tijuana branch": 4,
+    "URUAPAN - APEAM": 1
+}
+
 # UI: Date input with default to today
 selected_date = st.date_input("Select today's date", value=datetime.today())
 today = datetime.combine(selected_date, datetime.min.time())
@@ -52,8 +70,13 @@ if st.button("Run"):
     filtered_df = df[df['SubSite'].isin(selected_subsites)]
     eligible_df = filtered_df[filtered_df['AbleToBeCounted']].copy()
 
-    def get_clustered_locations(site_df, full_group_df, max_locations):
+    def get_clustered_locations(site_df, full_group_df, subsite):
         site_df = site_df.sort_values(by=['Times_Counted_CurrentQtr', 'Z'])
+
+        # Get max_locations from static map, allow user override
+        default_value = default_max_locations.get(subsite, 5)
+        max_locations = st.number_input(f"Max Locations for {subsite}", min_value=1, max_value=100, value=int(default_value), step=1)
+
         quota = {
             'A': int(np.ceil(max_locations * (a_pct / 100))),
             'B': int(np.ceil(max_locations * (b_pct / 100)))
@@ -87,8 +110,7 @@ if st.button("Run"):
         eligible_group = eligible_df[eligible_df['SubSite'] == subsite]
         if eligible_group.empty:
             continue
-        max_locations = site_group['MaxLocations'].iloc[0]
-        clustered_df = get_clustered_locations(eligible_group, site_group, max_locations)
+        clustered_df = get_clustered_locations(eligible_group, site_group, subsite)
         daily_workload.append(clustered_df)
 
     if daily_workload:
