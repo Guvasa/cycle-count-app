@@ -10,21 +10,19 @@ from datetime import datetime
 from mpl_toolkits.mplot3d import Axes3D
 
 # Load dataset
-#df = pd.read_csv("normalized_data_with_ABC_classification.csv", delimiter=',')
 df = pd.read_csv("normalized_data_with_ABC_classification.csv", delimiter=',', encoding='latin1')
 
 # UI: Date input with default to today
 selected_date = st.date_input("Select today's date", value=datetime.today())
 today = datetime.combine(selected_date, datetime.min.time())
 
-# UI: Site/SubSite filter
-df['Site_SubSite'] = df['Sitio'].astype(str) + " / " + df['SubSite'].astype(str)
-site_subsite_options = df['Site_SubSite'].unique()
-selected_sites = st.multiselect("Select Site/SubSite", site_subsite_options, default=site_subsite_options[:1])
+# UI: SubSite filter only
+subsite_options = df['SubSite'].unique()
+selected_subsites = st.multiselect("Select SubSite(s)", subsite_options, default=subsite_options[:1])
 
 # UI: Optional seed location selector
 location_options = df['Location'].unique()
-selected_location = st.selectbox("Optional: Select a specific location to use as seed", options=[""] + list(location_options))
+selected_location = st.selectbox("Optional: Select a specific location to use as seed", options=["" ] + list(location_options))
 
 # UI: Flexible quota sliders
 st.sidebar.header("Adjust ABC Quotas (must total 100%)")
@@ -51,7 +49,7 @@ df['AbleToBeCounted'] = df.apply(able_to_be_counted, axis=1)
 
 # Run button to control execution
 if st.button("Run"):
-    filtered_df = df[df['Site_SubSite'].isin(selected_sites)]
+    filtered_df = df[df['SubSite'].isin(selected_subsites)]
     eligible_df = filtered_df[filtered_df['AbleToBeCounted']].copy()
 
     def get_clustered_locations(site_df, full_group_df, max_locations):
@@ -75,8 +73,6 @@ if st.button("Run"):
             seed_row = full_group_df.sort_values(by='LastCount_Date', ascending=False).iloc[0]
 
         seed_coords = [[seed_row['X'], seed_row['Y'], seed_row['Z']]]
-        #st.write(f"📍 Chosen seed for {seed_row['Location']}: {seed_coords}")
-        #st.write(f\"📍 Chosen seed for {seed_row['Location']}: {[int(seed_row['X']), int(seed_row['Y']), int(seed_row['Z'])]}\")
         st.write(f"📍 Chosen seed for {seed_row['Location']}: {[int(seed_row['X']), int(seed_row['Y']), int(seed_row['Z'])]}")
 
         coords = selected_df[['X', 'Y', 'Z']]
@@ -87,8 +83,8 @@ if st.button("Run"):
         return selected_df
 
     daily_workload = []
-    for (site, subsite), site_group in filtered_df.groupby(['Sitio', 'SubSite']):
-        eligible_group = eligible_df[(eligible_df['Sitio'] == site) & (eligible_df['SubSite'] == subsite)]
+    for subsite, site_group in filtered_df.groupby('SubSite'):
+        eligible_group = eligible_df[eligible_df['SubSite'] == subsite]
         if eligible_group.empty:
             continue
         max_locations = site_group['MaxLocations'].iloc[0]
@@ -115,5 +111,4 @@ if st.button("Run"):
 
         st.pyplot(fig)
     else:
-        st.warning("No eligible locations for selected Site/SubSite on this date.")
-    #Run on Terminal> (MLsgv) C:\Users\Sandro Guzman\OneDrive - Pro Mach, Inc\CERM\CycleCount\Planning>streamlit run app.py
+        st.warning("No eligible locations for selected SubSite(s) on this date.")
