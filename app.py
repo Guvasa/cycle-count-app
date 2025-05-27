@@ -79,7 +79,7 @@ def able_to_be_counted(row):
     elif row['Classification'] == 'B':
         return row['DaysSinceLastCount'] >= 45
     elif row['Classification'] == 'C':
-        return row['DaysSinceLastCount'] >= 90
+        return row['DaysSinceLastCount'] >= 60
     return False
 
 df['AbleToBeCounted'] = df.apply(able_to_be_counted, axis=1)
