@@ -34,9 +34,25 @@ default_max_locations = {
 selected_date = st.date_input("Select today's date", value=datetime.today())
 today = datetime.combine(selected_date, datetime.min.time())
 
-# UI: SubSite filter only
+# UI layout: subsite selection and max location inputs side by side
 subsite_options = df['SubSite'].unique()
-selected_subsites = st.multiselect("Select SubSite(s)", subsite_options, default=subsite_options[:1])
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    selected_subsites = st.multiselect("Select SubSite(s)", subsite_options, default=subsite_options[:1])
+
+with col2:
+    subsite_max_location_input = {}
+    for subsite in selected_subsites:
+        default_value = default_max_locations.get(subsite, 5)
+        subsite_max_location_input[subsite] = st.number_input(
+            f"Max for {subsite[:15] + ('...' if len(subsite) > 15 else '')}",
+            min_value=1,
+            max_value=100,
+            value=int(default_value),
+            step=1,
+            key=f"max_input_{subsite}"
+        )
 
 # UI: Optional seed location selector
 location_options = df['Location'].unique()
@@ -70,12 +86,8 @@ if st.button("Run"):
     filtered_df = df[df['SubSite'].isin(selected_subsites)]
     eligible_df = filtered_df[filtered_df['AbleToBeCounted']].copy()
 
-    def get_clustered_locations(site_df, full_group_df, subsite):
+    def get_clustered_locations(site_df, full_group_df, subsite, max_locations):
         site_df = site_df.sort_values(by=['Times_Counted_CurrentQtr', 'Z'])
-
-        # Get max_locations from static map, allow user override
-        default_value = default_max_locations.get(subsite, 5)
-        max_locations = st.number_input(f"Max Locations for {subsite}", min_value=1, max_value=100, value=int(default_value), step=1)
 
         quota = {
             'A': int(np.ceil(max_locations * (a_pct / 100))),
@@ -110,7 +122,8 @@ if st.button("Run"):
         eligible_group = eligible_df[eligible_df['SubSite'] == subsite]
         if eligible_group.empty:
             continue
-        clustered_df = get_clustered_locations(eligible_group, site_group, subsite)
+        max_locations = subsite_max_location_input.get(subsite, 5)
+        clustered_df = get_clustered_locations(eligible_group, site_group, subsite, max_locations)
         daily_workload.append(clustered_df)
 
     if daily_workload:
