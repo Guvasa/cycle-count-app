@@ -97,6 +97,7 @@ if st.button("Run"):
             'B': int(np.ceil(max_locations * (b_pct / 100)))
         }
         quota['C'] = max_locations - quota['A'] - quota['B']
+        st.write(quota)
 
         selected = []
         for cls in ['A', 'B', 'C']:
