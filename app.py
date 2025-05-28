@@ -64,21 +64,18 @@ a_pct = st.sidebar.slider("% A", 0, 100, 10)
 b_pct = st.sidebar.slider("% B", 0, 100 - a_pct, 15)
 c_pct = 100 - a_pct - b_pct
 st.sidebar.markdown(f"**% C:** {c_pct}%")
-st.write(a_pct)
-st.write(b_pct)
-st.write(c_pct)
 
 # Convert date and calculate days since last count
 df['LastCount_Date'] = pd.to_datetime(df['LastCount_Date'], dayfirst=True, errors='coerce')
 df['DaysSinceLastCount'] = (today - df['LastCount_Date']).dt.days
 
-# Classification rules
+# Enhanced classification rules with frequency limits
 def able_to_be_counted(row):
-    if row['Classification'] == 'A':
+    if (row['Classification'] == 'A') and (row['Times_Counted_CurrentQtr'] < 3):
         return row['DaysSinceLastCount'] >= 30
-    elif row['Classification'] == 'B':
+    elif (row['Classification'] == 'B') and (row['Times_Counted_CurrentQtr'] < 2):
         return row['DaysSinceLastCount'] >= 45
-    elif row['Classification'] == 'C':
+    elif (row['Classification'] == 'C') and (row['Times_Counted_CurrentQtr'] < 1):
         return row['DaysSinceLastCount'] >= 60
     return False
 
@@ -97,7 +94,6 @@ if st.button("Run"):
             'B': int(np.ceil(max_locations * (b_pct / 100)))
         }
         quota['C'] = max_locations - quota['A'] - quota['B']
-        st.write(quota)
 
         selected = []
         for cls in ['A', 'B', 'C']:
