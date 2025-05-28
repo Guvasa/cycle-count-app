@@ -145,5 +145,15 @@ if st.button("Run"):
             ax.text(row['Z'], row['X'], row['Y'], str(row['Location']), fontsize=8)
 
         st.pyplot(fig)
+
+        # Generate export-ready CSV
+        export_df = final_selection.copy()
+        export_df.insert(0, 'Index', range(1, len(export_df) + 1))
+        export_df.insert(3, 'Comment', '')
+        export_df.insert(5, 'Comment2', '')
+        export_columns = ['Index', 'Location', 'LastCount_Date', 'Comment', 'SubSite', 'Comment2', 'Sitio', 'X', 'Y', 'Z', 'Classification', 'Times_Counted_CurrentQtr', 'Cluster']
+        export_df = export_df[export_columns]
+
+        st.download_button("📥 Download Daily Workload CSV", export_df.to_csv(index=False), file_name="daily_workload.csv", mime="text/csv")
     else:
         st.warning("No eligible locations for selected SubSite(s) on this date.")
