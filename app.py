@@ -155,5 +155,22 @@ if st.button("Run"):
         export_df = export_df[export_columns]
 
         st.download_button("📥 Download Daily Workload CSV", export_df.to_csv(index=False), file_name="daily_workload.csv", mime="text/csv")
+
+        # Summary of final selection
+        st.subheader("📊 Workload Summary")
+
+        total_count = len(final_selection)
+        class_counts = final_selection['Classification'].value_counts().to_dict()
+        cluster_counts = final_selection['Cluster'].value_counts().sort_index().to_dict()
+
+        st.markdown(f"- **Total Locations Selected:** {total_count}")
+        st.markdown("- **By Classification:**")
+        for cls in ['A', 'B', 'C']:
+            count = class_counts.get(cls, 0)
+            st.markdown(f"  - {cls}: {count} ({(count/total_count)*100:.1f}%)")
+
+        st.markdown("- **By Cluster:**")
+        for cluster_id, count in cluster_counts.items():
+            st.markdown(f"  - Cluster {cluster_id}: {count} locations")
     else:
         st.warning("No eligible locations for selected SubSite(s) on this date.")
