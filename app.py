@@ -39,7 +39,7 @@ subsite_options = df['SubSite'].unique()
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    selected_subsites = st.multiselect("Select SubSite(s)", subsite_options, default=subsite_options[:2])
+    selected_subsites = st.multiselect("Select SubSite(s)", subsite_options, default=subsite_options['Distribution Center (DC)'])
 
 with col2:
     subsite_max_location_input = {}
