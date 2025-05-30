@@ -39,7 +39,7 @@ subsite_options = df['SubSite'].unique()
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    selected_subsites = st.multiselect("Select SubSite(s)", subsite_options, default=subsite_options[:1])
+    selected_subsites = st.multiselect("Select SubSite(s)", subsite_options, default=subsite_options[:2])
 
 with col2:
     subsite_max_location_input = {}
@@ -72,9 +72,9 @@ df['DaysSinceLastCount'] = (today - df['LastCount_Date']).dt.days
 # Enhanced classification rules with frequency limits
 def able_to_be_counted(row):
     if (row['Classification'] == 'A') and (row['Times_Counted_CurrentQtr'] < 3):
-        return row['DaysSinceLastCount'] >= 30
+        return row['DaysSinceLastCount'] >= 26
     elif (row['Classification'] == 'B') and (row['Times_Counted_CurrentQtr'] < 2):
-        return row['DaysSinceLastCount'] >= 45
+        return row['DaysSinceLastCount'] >= 40
     elif (row['Classification'] == 'C') and (row['Times_Counted_CurrentQtr'] < 1):
         return row['DaysSinceLastCount'] >= 50
     return False
