@@ -66,8 +66,8 @@ c_pct = 100 - a_pct - b_pct
 st.sidebar.markdown(f"**% C:** {c_pct}%")
 
 # Convert date and calculate days since last count
-df['LastCount_Date'] = pd.to_datetime(df['LastCount_Date'], dayfirst=True, errors='coerce')
-st.write('LastCount_Date')
+#df['LastCount_Date'] = pd.to_datetime(df['LastCount_Date'], dayfirst=True, errors='coerce')
+df['LastCount_Date'] = pd.to_datetime(df['LastCount_Date'].astype(str).str.strip(), dayfirst=True, errors='coerce')
 df['DaysSinceLastCount'] = (today - df['LastCount_Date']).dt.days
 
 # Enhanced classification rules with frequency limits
